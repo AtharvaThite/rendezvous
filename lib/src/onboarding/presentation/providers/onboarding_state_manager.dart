@@ -5,6 +5,18 @@ class OnboardingStateManager with ChangeNotifier {
   int currentPage = 0;
   String emailAddress = '';
 
+  void setPageIndex(int index) {
+    currentPage = index;
+    notifyListeners();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (pageController.hasClients) {
+        pageController.jumpToPage(index);
+      } else {
+        debugPrint('PageController not attached yet');
+      }
+    });
+  }
+
   void nextPage() {
     if (currentPage < 2) {
       // assuming 3 pages
