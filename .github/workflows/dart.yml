@@ -13,10 +13,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Setup Flutter environment
       - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.29.0' # use your required version
+          flutter-version: '3.29.2' 
 
       - name: Install dependencies
         run: flutter pub get
