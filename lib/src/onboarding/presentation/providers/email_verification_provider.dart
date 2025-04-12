@@ -10,63 +10,45 @@ class EmailVerificationProvider with ChangeNotifier {
   final RequestEmailCode requestEmailCode;
   final VerifyEmailCode verifyEmailCode;
 
-  EmailVerificationState _state = EmailVerificationInitial();
-  EmailVerificationState get state => _state;
+  String? _error;
+  String? _successMessage;
+
+  String? get error => _error;
+  String? get successMessage => _successMessage;
 
   Future<void> requestCode(String email) async {
-    _state = EmailVerificationLoading();
+    _error = null;
+    _successMessage = null;
     notifyListeners();
 
     final result = await requestEmailCode(email);
 
     result.fold(
-      (failure) {
-        _state = EmailVerificationFailure(failure.message);
-        notifyListeners();
-      },
-      (_) {
-        _state = EmailVerificationSuccess('success');
-        notifyListeners();
-      },
+      (failure) => _error = failure.message,
+      (success) => _successMessage = success,
     );
+
+    notifyListeners();
   }
 
   Future<void> verifyCode(String email, int code) async {
-    _state = EmailVerificationLoading();
+    _error = null;
+    _successMessage = null;
     notifyListeners();
 
     final result = await verifyEmailCode(code);
 
     result.fold(
-      (failure) {
-        _state = EmailVerificationFailure(failure.message);
-        notifyListeners();
-      },
-      (_) {
-        _state = EmailVerificationSuccess('success');
-        notifyListeners();
-      },
+      (failure) => _error = failure.message,
+      (success) => _successMessage = 'success',
     );
+
+    notifyListeners();
   }
 
   void reset() {
-    _state = EmailVerificationInitial();
+    _error = null;
+    _successMessage = null;
     notifyListeners();
   }
-}
-
-abstract class EmailVerificationState {}
-
-class EmailVerificationInitial extends EmailVerificationState {}
-
-class EmailVerificationLoading extends EmailVerificationState {}
-
-class EmailVerificationSuccess extends EmailVerificationState {
-  EmailVerificationSuccess(this.message);
-  final String message;
-}
-
-class EmailVerificationFailure extends EmailVerificationState {
-  EmailVerificationFailure(this.error);
-  final String error;
 }
