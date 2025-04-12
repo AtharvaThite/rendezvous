@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:rendezvous/core/theme/app_colors.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -11,6 +12,7 @@ class CustomTextField extends StatelessWidget {
     this.validator,
     this.suffixIcon,
     this.keyboardType,
+    this.inputFormatters,
     super.key,
   });
 
@@ -22,6 +24,7 @@ class CustomTextField extends StatelessWidget {
   final Widget? suffixIcon;
   final bool readOnly;
   final TextInputType? keyboardType;
+  final List<TextInputFormatter>? inputFormatters;
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +33,7 @@ class CustomTextField extends StatelessWidget {
       obscureText: obscureText,
       readOnly: readOnly,
       keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
       validator:
           overrideValidator
               ? validator
