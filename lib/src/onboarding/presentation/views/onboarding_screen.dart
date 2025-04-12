@@ -47,7 +47,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     context.read<OnboardingStateManager>().onPageChanged(index);
                   },
                   children: [
-                    VerifyEmailPage1(emailController: emailController),
+                    const VerifyEmailPage1(),
                     VerifyEmailPage2(emailController: emailController),
                     const ProfileCreationPage(),
                   ],
