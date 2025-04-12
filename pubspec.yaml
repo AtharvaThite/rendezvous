@@ -37,6 +37,8 @@ dependencies:
   provider: ^6.1.4
   shared_preferences: ^2.5.3
   get_it: ^8.0.3
+  auto_size_text: ^3.0.0
+  very_good_analysis: ^7.0.0
 
 dev_dependencies:
   flutter_test:
