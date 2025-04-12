@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:rendezvous/core/routes/routes.dart';
+import 'package:rendezvous/core/services/dependacy_injection.dart';
 import 'package:rendezvous/core/theme/app_colors.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await init();
   runApp(const MyApp());
 }
 
