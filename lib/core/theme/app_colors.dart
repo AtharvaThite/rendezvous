@@ -6,4 +6,5 @@ class AppColors {
   static const Color fontColor = Color(0xFF0A1A4B);
   static const Color borderColor = Color(0xFF202939);
   static const Color error = Color(0xFFFA5A4E);
+  static const Color linkColor = Color(0xFF2196F3);
 }
