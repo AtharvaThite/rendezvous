@@ -35,7 +35,7 @@ class CoreUtils {
             message,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
-              color: AppColors.fontColor,
+              color: AppColors.secondaryColor,
             ),
           ),
           behavior: SnackBarBehavior.floating,
