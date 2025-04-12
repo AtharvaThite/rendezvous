@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:rendezvous/core/routes/routes.dart';
+import 'package:rendezvous/core/theme/app_colors.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,9 +16,9 @@ class MyApp extends StatelessWidget {
       title: 'Rendezvous',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: AppColors.primaryColor),
       ),
-      home: Placeholder(),
+      onGenerateRoute: generateRoute,
     );
   }
 }
