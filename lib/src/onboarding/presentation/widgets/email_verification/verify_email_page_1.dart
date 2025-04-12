@@ -48,6 +48,7 @@ class _VerifyEmailPage1State extends State<VerifyEmailPage1> {
 
   Future<void> emailSentHandler({required String message}) async {
     sendButtonController.success();
+    CoreUtils.showSnackbar(context, message);
     await Future<void>.delayed(const Duration(seconds: 1));
     sendButtonController.reset();
     emailVerificationProvider.reset();
