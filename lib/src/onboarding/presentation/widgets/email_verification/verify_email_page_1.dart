@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -26,14 +25,17 @@ class _VerifyEmailPage1State extends State<VerifyEmailPage1> {
   @override
   void initState() {
     super.initState();
+
     emailVerificationProvider = context.read<EmailVerificationProvider>();
 
     emailVerificationProvider.addListener(() {
-      if (emailVerificationProvider.error != null) {
-        errorHandler(error: emailVerificationProvider.error!);
+      if (emailVerificationProvider.emailSentError != null) {
+        errorHandler(error: emailVerificationProvider.emailSentError!);
       }
-      if (emailVerificationProvider.successMessage != null) {
-        emailSentHandler(message: emailVerificationProvider.successMessage!);
+      if (emailVerificationProvider.emailSentSuccessMessage != null) {
+        emailSentHandler(
+          message: emailVerificationProvider.emailSentSuccessMessage!,
+        );
       }
     });
   }
@@ -57,6 +59,12 @@ class _VerifyEmailPage1State extends State<VerifyEmailPage1> {
 
   void navigate() {
     context.read<OnboardingStateManager>().nextPage();
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    super.dispose();
   }
 
   @override
@@ -101,11 +109,12 @@ class _VerifyEmailPage1State extends State<VerifyEmailPage1> {
             Center(
               child: RoundedLoadingButton(
                 controller: sendButtonController,
-                onPressed: () async {
-                  sendButtonController.start();
+                onPressed: () {
                   if (emailFormKey.currentState!.validate()) {
-                    log('request code called');
-                    await emailVerificationProvider.requestCode(
+                    context.read<OnboardingStateManager>().setEmail(
+                      emailController.text.trim(),
+                    );
+                    emailVerificationProvider.requestCode(
                       emailController.text.trim(),
                     );
                   } else {
