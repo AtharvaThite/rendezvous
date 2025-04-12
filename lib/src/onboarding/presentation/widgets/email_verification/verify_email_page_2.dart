@@ -1,108 +1,228 @@
+import 'dart:developer';
+
 import 'package:auto_size_text/auto_size_text.dart' show AutoSizeText;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:rendezvous/core/services/dependacy_injection.dart';
 import 'package:rendezvous/core/theme/app_colors.dart';
+import 'package:rendezvous/core/utils/core_utils.dart';
+import 'package:rendezvous/core/utils/shared_prefs_keys.dart';
 import 'package:rendezvous/core/widgets/custom_textfield.dart';
+import 'package:rendezvous/core/widgets/rounded_loading_button.dart';
+import 'package:rendezvous/src/onboarding/domain/usecases/verify_email_code.dart';
+import 'package:rendezvous/src/onboarding/presentation/providers/email_verification_provider.dart';
 import 'package:rendezvous/src/onboarding/presentation/providers/onboarding_state_manager.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class VerifyEmailPage2 extends StatelessWidget {
-  const VerifyEmailPage2({required this.emailController, super.key});
+class VerifyEmailPage2 extends StatefulWidget {
+  const VerifyEmailPage2({super.key});
 
-  final TextEditingController emailController;
+  @override
+  State<VerifyEmailPage2> createState() => _VerifyEmailPage2State();
+}
+
+class _VerifyEmailPage2State extends State<VerifyEmailPage2> {
+  final codeController = TextEditingController();
+  late EmailVerificationProvider emailVerificationProvider;
+  final verifyButtonController = RoundedLoadingButtonController();
+  final verifyCodeFormKey = GlobalKey<FormState>();
+  final prefs = sl<SharedPreferences>();
+
+  String email = '';
+
+  @override
+  void initState() {
+    super.initState();
+    email = prefs.getString(SharedPrefsKeys.email) ?? '';
+    emailVerificationProvider = context.read<EmailVerificationProvider>();
+    if (email.isEmpty) {
+      email = context.read<OnboardingStateManager>().emailAddress;
+    }
+
+    emailVerificationProvider.addListener(() {
+      if (emailVerificationProvider.codeVerifyError != null) {
+        verifyErrorHandler(error: emailVerificationProvider.codeVerifyError!);
+      }
+      if (emailVerificationProvider.codeVerifySuccessMessage != null) {
+        verifySuccessHandler(
+          message: emailVerificationProvider.codeVerifySuccessMessage!,
+        );
+      }
+      if (emailVerificationProvider.emailSentError != null) {
+        resendEmailErrorHandler(
+          error: emailVerificationProvider.emailSentError!,
+        );
+      }
+      if (emailVerificationProvider.emailSentSuccessMessage != null) {
+        resendEmailSuccessHandler(
+          message: emailVerificationProvider.emailSentSuccessMessage!,
+        );
+      }
+    });
+  }
+
+  Future<void> verifyErrorHandler({required String error}) async {
+    verifyButtonController.error();
+    CoreUtils.showErrorSnackbar(context, error);
+    await Future<void>.delayed(const Duration(seconds: 1));
+    verifyButtonController.reset();
+    emailVerificationProvider.reset();
+  }
+
+  Future<void> resendEmailErrorHandler({required String error}) async {
+    CoreUtils.showErrorSnackbar(context, error);
+    await Future<void>.delayed(const Duration(seconds: 1));
+    emailVerificationProvider.reset();
+  }
+
+  Future<void> verifySuccessHandler({required String message}) async {
+    verifyButtonController.success();
+    CoreUtils.showSnackbar(context, message);
+    await Future<void>.delayed(const Duration(seconds: 1));
+    verifyButtonController.reset();
+    emailVerificationProvider.reset();
+    navigate();
+  }
+
+  Future<void> resendEmailSuccessHandler({required String message}) async {
+    CoreUtils.showSnackbar(context, message);
+    await Future<void>.delayed(const Duration(seconds: 1));
+    emailVerificationProvider.reset();
+  }
+
+  void navigate() {
+    context.read<OnboardingStateManager>().nextPage();
+  }
+
+  @override
+  void dispose() {
+    codeController.dispose();
+    emailVerificationProvider.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 40,
-        children: [
-          const AutoSizeText(
-            minFontSize: 24,
-            maxFontSize: 28,
-            'Check Your Inbox! 📬',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              color: AppColors.fontColor,
-            ),
-          ),
-          const AutoSizeText(
-            minFontSize: 18,
-            maxFontSize: 20,
-            'We’ve sent a 6-digit code to your email.\nEnter it below to verify your identity.',
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              color: AppColors.fontColor,
-            ),
-          ),
-
-          CustomTextField(
-            labelText: 'Enter Verification Code',
-            controller: emailController,
-          ),
-
-          Center(
-            child: ElevatedButton(
-              onPressed: () {
-                context.read<OnboardingStateManager>().nextPage();
-              },
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 50,
-                  vertical: 14,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                backgroundColor: AppColors.primaryColor,
-                shadowColor: AppColors.borderColor,
-              ),
-              child: const Text(
-                'Verify',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AppColors.fontColor,
-                  fontWeight: FontWeight.w600,
-                ),
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 40,
+          children: [
+            const AutoSizeText(
+              minFontSize: 24,
+              maxFontSize: 28,
+              'Check Your Inbox! 📬',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: AppColors.fontColor,
               ),
             ),
-          ),
+            const AutoSizeText(
+              minFontSize: 18,
+              maxFontSize: 20,
+              'We’ve sent a 6-digit code to your email.\nEnter it below to verify your identity.',
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                color: AppColors.fontColor,
+              ),
+            ),
 
-          Center(
-            child: RichText(
-              textAlign: TextAlign.center,
-              text: TextSpan(
-                text: 'Didn’t get it?\n',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.fontColor,
-                ),
-                children: [
-                  TextSpan(
-                    recognizer:
-                        TapGestureRecognizer()
-                          ..onTap = () {
-                            // Add your onTap logic here
-                          },
-                    text: 'Click Here ',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.linkColor,
-                    ),
-                  ),
-                  const TextSpan(
-                    text: 'to Resend Code!',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                  ),
+            Form(
+              key: verifyCodeFormKey,
+              child: CustomTextField(
+                labelText: 'Enter Verification Code',
+                controller: codeController,
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  LengthLimitingTextInputFormatter(6),
+                  FilteringTextInputFormatter.digitsOnly,
                 ],
               ),
             ),
-          ),
-        ],
+
+            Center(
+              child: RoundedLoadingButton(
+                controller: verifyButtonController,
+                onPressed: () {
+                  if (codeController.text.length != 6) {
+                    CoreUtils.showSnackbar(
+                      context,
+                      'Please Enter a six digit verification code',
+                    );
+                    verifyButtonController.reset();
+                  } else {
+                    if (verifyCodeFormKey.currentState!.validate()) {
+                      log(email);
+                      log(codeController.text);
+                      final params = VerifyCodeParams(
+                        code: codeController.text.trim(),
+                        email: email,
+                      );
+                      emailVerificationProvider.verifyCode(params);
+                    } else {
+                      verifyButtonController.reset();
+                    }
+                  }
+                },
+                child: const Text(
+                  'Verify',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: AppColors.fontColor,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+
+            Center(
+              child: RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  text: 'Didn’t get it?\n',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.fontColor,
+                  ),
+                  children: [
+                    TextSpan(
+                      recognizer:
+                          TapGestureRecognizer()
+                            ..onTap = () {
+                              if (email.isNotEmpty) {
+                                emailVerificationProvider.requestCode(email);
+                              } else {
+                                CoreUtils.showSnackbar(
+                                  context,
+                                  'Email Address not found',
+                                );
+                              }
+                            },
+                      text: 'Click Here ',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.linkColor,
+                      ),
+                    ),
+                    const TextSpan(
+                      text: 'to Resend Code!',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

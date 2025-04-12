@@ -16,7 +16,6 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  final emailController = TextEditingController();
   int pageIndex = 0;
   @override
   Widget build(BuildContext context) {
@@ -42,14 +41,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 child: PageView(
                   controller:
                       context.read<OnboardingStateManager>().pageController,
+                      
                   physics: const NeverScrollableScrollPhysics(),
                   onPageChanged: (index) {
                     context.read<OnboardingStateManager>().onPageChanged(index);
                   },
-                  children: [
-                    const VerifyEmailPage1(),
-                    VerifyEmailPage2(emailController: emailController),
-                    const ProfileCreationPage(),
+                  children: const [
+                    VerifyEmailPage1(),
+                    VerifyEmailPage2(),
+                    ProfileCreationPage(),
                   ],
                 ),
               ),
