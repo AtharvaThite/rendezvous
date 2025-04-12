@@ -7,8 +7,10 @@ class CustomTextField extends StatelessWidget {
     required this.controller,
     this.overrideValidator = false,
     this.obscureText = false,
+    this.readOnly = false,
     this.validator,
     this.suffixIcon,
+    this.keyboardType,
     super.key,
   });
 
@@ -18,12 +20,16 @@ class CustomTextField extends StatelessWidget {
   final bool overrideValidator;
   final bool obscureText;
   final Widget? suffixIcon;
+  final bool readOnly;
+  final TextInputType? keyboardType;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
+      readOnly: readOnly,
+      keyboardType: keyboardType,
       validator:
           overrideValidator
               ? validator
@@ -38,28 +44,28 @@ class CustomTextField extends StatelessWidget {
       },
       decoration: InputDecoration(
         labelText: labelText,
-        labelStyle: TextStyle(
+        labelStyle: const TextStyle(
           fontWeight: FontWeight.w600,
           color: AppColors.fontColor,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(14)),
+        enabledBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(14)),
           borderSide: BorderSide(width: 2, color: AppColors.borderColor),
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(14)),
+        focusedBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(14)),
           borderSide: BorderSide(width: 2, color: AppColors.borderColor),
         ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(14)),
+        errorBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(14)),
           borderSide: BorderSide(width: 2, color: AppColors.error),
         ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(14)),
+        focusedErrorBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(14)),
           borderSide: BorderSide(width: 2, color: AppColors.borderColor),
         ),
-        border: OutlineInputBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(14)),
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(14)),
           borderSide: BorderSide(width: 2, color: AppColors.borderColor),
         ),
 
