@@ -4,5 +4,8 @@ abstract class OnboardingRepo {
   const OnboardingRepo();
 
   ResultFuture<String> requestEmailCode({required String email});
-  ResultFuture<void> verifyEmailCode({required int code});
+  ResultFuture<void> verifyEmailCode({
+    required String email,
+    required String code,
+  });
 }

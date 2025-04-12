@@ -19,9 +19,12 @@ class OnboardingRepoImpl extends OnboardingRepo {
   }
 
   @override
-  ResultFuture<void> verifyEmailCode({required int code}) async {
+  ResultFuture<void> verifyEmailCode({
+    required String email,
+    required String code,
+  }) async {
     try {
-      await _remoteDataSource.verifyEmailCode(code: code);
+      await _remoteDataSource.verifyEmailCode(email: email, code: code);
       return const Right(null);
     } on APIException catch (e) {
       return Left(ApiFailure.fromException(e));
