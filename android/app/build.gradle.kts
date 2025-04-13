@@ -8,7 +8,8 @@ plugins {
 android {
     namespace = "com.example.rendezvous"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    // ndkVersion = flutter.ndkVersion
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -34,6 +35,8 @@ android {
         release {
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
+            isMinifyEnabled = true  
+            isShrinkResources = true  
             signingConfig = signingConfigs.getByName("debug")
         }
     }
