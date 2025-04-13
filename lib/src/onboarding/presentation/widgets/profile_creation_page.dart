@@ -16,7 +16,6 @@ import 'package:rendezvous/core/widgets/custom_drop_down.dart';
 import 'package:rendezvous/core/widgets/custom_textfield.dart';
 import 'package:rendezvous/core/widgets/custom_video_picker.dart';
 import 'package:rendezvous/core/widgets/rounded_loading_button.dart';
-import 'package:rendezvous/src/onboarding/presentation/providers/email_verification_provider.dart';
 import 'package:rendezvous/src/onboarding/presentation/providers/onboarding_state_manager.dart';
 import 'package:rendezvous/src/onboarding/presentation/providers/profile_submission_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -229,7 +228,7 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                         'gender': selectedGender,
                         'purposeOfUsingApp': selectedAppType,
                         'nonReferralVerificationVideo': video,
-                        'password': '12345',
+                        'password': '123456',
                       });
                       log('message');
                       await provider.createUser(formData);
