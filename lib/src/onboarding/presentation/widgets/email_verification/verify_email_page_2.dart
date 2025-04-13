@@ -25,7 +25,6 @@ class VerifyEmailPage2 extends StatefulWidget {
 
 class _VerifyEmailPage2State extends State<VerifyEmailPage2> {
   final codeController = TextEditingController();
-  late EmailVerificationProvider emailVerificationProvider;
   final verifyButtonController = RoundedLoadingButtonController();
   final verifyCodeFormKey = GlobalKey<FormState>();
   final prefs = sl<SharedPreferences>();
@@ -36,31 +35,9 @@ class _VerifyEmailPage2State extends State<VerifyEmailPage2> {
   void initState() {
     super.initState();
     email = prefs.getString(SharedPrefsKeys.email) ?? '';
-    emailVerificationProvider = context.read<EmailVerificationProvider>();
     if (email.isEmpty) {
       email = context.read<OnboardingStateManager>().emailAddress;
     }
-
-    emailVerificationProvider.addListener(() {
-      if (emailVerificationProvider.codeVerifyError != null) {
-        verifyErrorHandler(error: emailVerificationProvider.codeVerifyError!);
-      }
-      if (emailVerificationProvider.codeVerifySuccessMessage != null) {
-        verifySuccessHandler(
-          message: emailVerificationProvider.codeVerifySuccessMessage!,
-        );
-      }
-      if (emailVerificationProvider.emailSentError != null) {
-        resendEmailErrorHandler(
-          error: emailVerificationProvider.emailSentError!,
-        );
-      }
-      if (emailVerificationProvider.emailSentSuccessMessage != null) {
-        resendEmailSuccessHandler(
-          message: emailVerificationProvider.emailSentSuccessMessage!,
-        );
-      }
-    });
   }
 
   Future<void> verifyErrorHandler({required String error}) async {
@@ -68,13 +45,11 @@ class _VerifyEmailPage2State extends State<VerifyEmailPage2> {
     CoreUtils.showErrorSnackbar(context, error);
     await Future<void>.delayed(const Duration(seconds: 1));
     verifyButtonController.reset();
-    emailVerificationProvider.reset();
   }
 
   Future<void> resendEmailErrorHandler({required String error}) async {
     CoreUtils.showErrorSnackbar(context, error);
     await Future<void>.delayed(const Duration(seconds: 1));
-    emailVerificationProvider.reset();
   }
 
   Future<void> verifySuccessHandler({required String message}) async {
@@ -82,14 +57,12 @@ class _VerifyEmailPage2State extends State<VerifyEmailPage2> {
     CoreUtils.showSnackbar(context, message);
     await Future<void>.delayed(const Duration(seconds: 1));
     verifyButtonController.reset();
-    emailVerificationProvider.reset();
     navigate();
   }
 
   Future<void> resendEmailSuccessHandler({required String message}) async {
     CoreUtils.showSnackbar(context, message);
     await Future<void>.delayed(const Duration(seconds: 1));
-    emailVerificationProvider.reset();
   }
 
   void navigate() {
@@ -104,125 +77,151 @@ class _VerifyEmailPage2State extends State<VerifyEmailPage2> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 40,
-          children: [
-            const AutoSizeText(
-              minFontSize: 24,
-              maxFontSize: 28,
-              'Check Your Inbox! 📬',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AppColors.fontColor,
-              ),
-            ),
-            const AutoSizeText(
-              minFontSize: 18,
-              maxFontSize: 20,
-              'We’ve sent a 6-digit code to your email.\nEnter it below to verify your identity.',
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: AppColors.fontColor,
-              ),
-            ),
-
-            Form(
-              key: verifyCodeFormKey,
-              child: CustomTextField(
-                labelText: 'Enter Verification Code',
-                controller: codeController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(6),
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
-              ),
-            ),
-
-            Center(
-              child: RoundedLoadingButton(
-                controller: verifyButtonController,
-                onPressed: () {
-                  if (codeController.text.length != 6) {
-                    CoreUtils.showSnackbar(
-                      context,
-                      'Please Enter a six digit verification code',
-                    );
-                    verifyButtonController.reset();
-                  } else {
-                    if (verifyCodeFormKey.currentState!.validate()) {
-                      log(email);
-                      log(codeController.text);
-                      final params = VerifyCodeParams(
-                        code: codeController.text.trim(),
-                        email: email,
-                      );
-                      emailVerificationProvider.verifyCode(params);
-                    } else {
-                      verifyButtonController.reset();
-                    }
-                  }
-                },
-                child: const Text(
-                  'Verify',
-                  textAlign: TextAlign.center,
+    return Consumer<EmailVerificationProvider>(
+      builder: (context, provider, state) {
+        if (provider.codeVerifyError != null) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            verifyErrorHandler(error: provider.codeVerifyError!);
+          });
+        }
+        if (provider.codeVerifySuccessMessage != null) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            verifySuccessHandler(message: provider.codeVerifySuccessMessage!);
+          });
+        }
+        if (provider.emailSentError != null) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            resendEmailErrorHandler(error: provider.emailSentError!);
+          });
+        }
+        if (provider.emailSentSuccessMessage != null) {
+          WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+            resendEmailSuccessHandler(
+              message: provider.emailSentSuccessMessage!,
+            );
+          });
+        }
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 40,
+              children: [
+                const AutoSizeText(
+                  minFontSize: 24,
+                  maxFontSize: 28,
+                  'Check Your Inbox! 📬',
                   style: TextStyle(
-                    color: AppColors.fontColor,
                     fontWeight: FontWeight.w600,
+                    color: AppColors.fontColor,
                   ),
                 ),
-              ),
-            ),
-
-            Center(
-              child: RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  text: 'Didn’t get it?\n',
-                  style: const TextStyle(
-                    fontSize: 14,
+                const AutoSizeText(
+                  minFontSize: 18,
+                  maxFontSize: 20,
+                  'We’ve sent a 6-digit code to your email.\nEnter it below to verify your identity.',
+                  style: TextStyle(
                     fontWeight: FontWeight.w500,
                     color: AppColors.fontColor,
                   ),
-                  children: [
-                    TextSpan(
-                      recognizer:
-                          TapGestureRecognizer()
-                            ..onTap = () {
-                              if (email.isNotEmpty) {
-                                emailVerificationProvider.requestCode(email);
-                              } else {
-                                CoreUtils.showSnackbar(
-                                  context,
-                                  'Email Address not found',
-                                );
-                              }
-                            },
-                      text: 'Click Here ',
+                ),
+
+                Form(
+                  key: verifyCodeFormKey,
+                  child: CustomTextField(
+                    labelText: 'Enter Verification Code',
+                    controller: codeController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(6),
+                      FilteringTextInputFormatter.digitsOnly,
+                    ],
+                  ),
+                ),
+
+                Center(
+                  child: RoundedLoadingButton(
+                    controller: verifyButtonController,
+                    onPressed: () {
+                      if (codeController.text.length != 6) {
+                        CoreUtils.showSnackbar(
+                          context,
+                          'Please Enter a six digit verification code',
+                        );
+                        verifyButtonController.reset();
+                      } else {
+                        if (verifyCodeFormKey.currentState!.validate()) {
+                          log(email);
+                          log(codeController.text);
+                          final params = VerifyCodeParams(
+                            code: codeController.text.trim(),
+                            email: email,
+                          );
+                          provider.verifyCode(params);
+                        } else {
+                          verifyButtonController.reset();
+                        }
+                      }
+                    },
+                    child: const Text(
+                      'Verify',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: AppColors.fontColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+
+                Center(
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: TextSpan(
+                      text: 'Didn’t get it?\n',
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
-                        color: AppColors.linkColor,
+                        color: AppColors.fontColor,
                       ),
+                      children: [
+                        TextSpan(
+                          recognizer:
+                              TapGestureRecognizer()
+                                ..onTap = () {
+                                  if (email.isNotEmpty) {
+                                    provider.requestCode(email);
+                                  } else {
+                                    CoreUtils.showSnackbar(
+                                      context,
+                                      'Email Address not found',
+                                    );
+                                  }
+                                },
+                          text: 'Click Here ',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.linkColor,
+                          ),
+                        ),
+                        const TextSpan(
+                          text: 'to Resend Code!',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
-                    const TextSpan(
-                      text: 'to Resend Code!',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

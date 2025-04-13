@@ -20,24 +20,13 @@ class _VerifyEmailPage1State extends State<VerifyEmailPage1> {
   final sendButtonController = RoundedLoadingButtonController();
   final emailFormKey = GlobalKey<FormState>();
 
-  late EmailVerificationProvider emailVerificationProvider;
+  // late EmailVerificationProvider emailVerificationProvider;
 
   @override
   void initState() {
     super.initState();
 
-    emailVerificationProvider = context.read<EmailVerificationProvider>();
-
-    emailVerificationProvider.addListener(() {
-      if (emailVerificationProvider.emailSentError != null) {
-        errorHandler(error: emailVerificationProvider.emailSentError!);
-      }
-      if (emailVerificationProvider.emailSentSuccessMessage != null) {
-        emailSentHandler(
-          message: emailVerificationProvider.emailSentSuccessMessage!,
-        );
-      }
-    });
+    // emailVerificationProvider = context.read<EmailVerificationProvider>();
   }
 
   Future<void> errorHandler({required String error}) async {
@@ -45,7 +34,6 @@ class _VerifyEmailPage1State extends State<VerifyEmailPage1> {
     CoreUtils.showErrorSnackbar(context, error);
     await Future<void>.delayed(const Duration(seconds: 1));
     sendButtonController.reset();
-    emailVerificationProvider.reset();
   }
 
   Future<void> emailSentHandler({required String message}) async {
@@ -53,7 +41,6 @@ class _VerifyEmailPage1State extends State<VerifyEmailPage1> {
     CoreUtils.showSnackbar(context, message);
     await Future<void>.delayed(const Duration(seconds: 1));
     sendButtonController.reset();
-    emailVerificationProvider.reset();
     navigate();
   }
 
@@ -69,71 +56,83 @@ class _VerifyEmailPage1State extends State<VerifyEmailPage1> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 40),
-            const AutoSizeText(
-              minFontSize: 24,
-              maxFontSize: 28,
-              'Let’s Get You Verified! ✅',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AppColors.fontColor,
-              ),
-            ),
-            const SizedBox(height: 20),
-            const AutoSizeText(
-              minFontSize: 18,
-              maxFontSize: 20,
-              'Enter your email address to receive a \nverification code.',
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                color: AppColors.fontColor,
-              ),
-            ),
-            const SizedBox(height: 40),
-
-            Form(
-              key: emailFormKey,
-              child: CustomTextField(
-                labelText: 'Enter Email',
-                controller: emailController,
-              ),
-            ),
-            const SizedBox(height: 40),
-
-            Center(
-              child: RoundedLoadingButton(
-                controller: sendButtonController,
-                onPressed: () {
-                  if (emailFormKey.currentState!.validate()) {
-                    context.read<OnboardingStateManager>().setEmail(
-                      emailController.text.trim(),
-                    );
-                    emailVerificationProvider.requestCode(
-                      emailController.text.trim(),
-                    );
-                  } else {
-                    sendButtonController.reset();
-                  }
-                },
-                child: const Text(
-                  'Send',
-                  textAlign: TextAlign.center,
+    return Consumer<EmailVerificationProvider>(
+      builder: (context, provider, _) {
+        if (provider.emailSentError != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            errorHandler(error: provider.emailSentError!);
+          });
+        }
+        if (provider.emailSentSuccessMessage != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            emailSentHandler(message: provider.emailSentSuccessMessage!);
+          });
+        }
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 40),
+                const AutoSizeText(
+                  minFontSize: 24,
+                  maxFontSize: 28,
+                  'Let’s Get You Verified! ✅',
                   style: TextStyle(
-                    color: AppColors.fontColor,
                     fontWeight: FontWeight.w600,
+                    color: AppColors.fontColor,
                   ),
                 ),
-              ),
+                const SizedBox(height: 20),
+                const AutoSizeText(
+                  minFontSize: 18,
+                  maxFontSize: 20,
+                  'Enter your email address to receive a \nverification code.',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.fontColor,
+                  ),
+                ),
+                const SizedBox(height: 40),
+
+                Form(
+                  key: emailFormKey,
+                  child: CustomTextField(
+                    labelText: 'Enter Email',
+                    controller: emailController,
+                  ),
+                ),
+                const SizedBox(height: 40),
+
+                Center(
+                  child: RoundedLoadingButton(
+                    controller: sendButtonController,
+                    onPressed: () {
+                      if (emailFormKey.currentState!.validate()) {
+                        context.read<OnboardingStateManager>().setEmail(
+                          emailController.text.trim(),
+                        );
+                        provider.requestCode(emailController.text.trim());
+                      } else {
+                        sendButtonController.reset();
+                      }
+                    },
+                    child: const Text(
+                      'Send',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: AppColors.fontColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }
