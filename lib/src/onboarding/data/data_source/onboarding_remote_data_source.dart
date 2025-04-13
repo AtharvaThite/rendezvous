@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:rendezvous/core/errors/exceptions.dart';
 import 'package:rendezvous/core/utils/api_urls.dart';
 import 'package:rendezvous/core/utils/shared_prefs_keys.dart';
+import 'package:rendezvous/core/utils/typedefs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class OnboardingRemoteDataSource {
@@ -35,7 +36,7 @@ class OnboardingRemoteDataSourceImpl extends OnboardingRemoteDataSource {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email}),
       );
-      final responseBody = jsonDecode(response.body) as Map<String, dynamic>;
+      final responseBody = jsonDecode(response.body) as DataMap;
 
       if (response.statusCode == 200) {
         return responseBody['message'] as String;
@@ -66,7 +67,7 @@ class OnboardingRemoteDataSourceImpl extends OnboardingRemoteDataSource {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email, 'code': code}),
       );
-      final responseBody = jsonDecode(response.body) as Map<String, dynamic>;
+      final responseBody = jsonDecode(response.body) as DataMap;
 
       if (response.statusCode == 200) {
         log('Email code verified');

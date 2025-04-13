@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:rendezvous/core/errors/exceptions.dart';
 import 'package:rendezvous/core/utils/api_urls.dart';
 import 'package:rendezvous/core/utils/shared_prefs_keys.dart';
+import 'package:rendezvous/core/utils/typedefs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class AdminApprovalRemoteDataSource {
@@ -26,7 +27,7 @@ class AdminApprovalRemoteDataSourceImpl extends AdminApprovalRemoteDataSource {
         Uri.parse('${ApiUrls.adminApproval}/$userId'),
         headers: {'Content-Type': 'application/json'},
       );
-      final responseBody = jsonDecode(response.body) as Map<String, dynamic>;
+      final responseBody = jsonDecode(response.body) as DataMap;
 
       if (response.statusCode == 200) {
         await _prefs.setBool(SharedPrefsKeys.isProfileApproved, true);
