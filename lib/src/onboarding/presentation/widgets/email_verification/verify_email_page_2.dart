@@ -99,7 +99,6 @@ class _VerifyEmailPage2State extends State<VerifyEmailPage2> {
   @override
   void dispose() {
     codeController.dispose();
-    emailVerificationProvider.dispose();
     super.dispose();
   }
 
