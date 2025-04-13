@@ -109,14 +109,14 @@ class _CustomVideoPickerFieldState extends State<CustomVideoPickerField> {
           controller: fileNameController,
           readOnly: true,
           onTap: _pickVideo,
-          // validator:
-          //     widget.validator ??
-          //     (value) {
-          //       if (selectedVideo == null) {
-          //         return 'Please select a video';
-          //       }
-          //       return null;
-          //     },
+          validator:
+              widget.validator ??
+              (value) {
+                if (selectedVideo == null) {
+                  return 'Please select a video';
+                }
+                return null;
+              },
           decoration: InputDecoration(
             labelText: widget.labelText,
             labelStyle: const TextStyle(
