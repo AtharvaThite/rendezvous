@@ -20,7 +20,7 @@ class _AdminApprovalScreenState extends State<AdminApprovalScreen> {
   @override
   void initState() {
     super.initState();
-    final provider = Provider.of<AdminApprovalProvider>(context, listen: false)
+    final _ = Provider.of<AdminApprovalProvider>(context, listen: false)
       ..startPolling();
   }
 
@@ -106,7 +106,8 @@ class _AdminApprovalScreenState extends State<AdminApprovalScreen> {
                               minFontSize: 24,
                               maxFontSize: 28,
                               textAlign: TextAlign.center,
-                              'Your account is awaiting admin approval. Please wait...',
+                              'Your account is awaiting admin approval. '
+                              'Please wait...',
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.fontColor,

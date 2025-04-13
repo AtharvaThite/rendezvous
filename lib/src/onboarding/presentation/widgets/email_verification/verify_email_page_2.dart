@@ -120,7 +120,8 @@ class _VerifyEmailPage2State extends State<VerifyEmailPage2> {
                 const AutoSizeText(
                   minFontSize: 18,
                   maxFontSize: 20,
-                  'We’ve sent a 6-digit code to your email.\nEnter it below to verify your identity.',
+                  'We’ve sent a 6-digit code to your email.\n'
+                  'Enter it below to verify your identity.',
                   style: TextStyle(
                     fontWeight: FontWeight.w500,
                     color: AppColors.fontColor,

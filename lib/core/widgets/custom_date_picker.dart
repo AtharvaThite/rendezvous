@@ -32,7 +32,6 @@ class CustomDatePickerField extends StatelessWidget {
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
               primary: AppColors.borderColor,
-              onPrimary: Colors.white,
               onSurface: AppColors.fontColor,
             ),
           ),

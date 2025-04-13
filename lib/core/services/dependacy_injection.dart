@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart' show GetIt;
+import 'package:http/http.dart' as http;
 import 'package:rendezvous/src/admin-approval/data/data_source/admin_approval_remote_data_source.dart';
 import 'package:rendezvous/src/admin-approval/data/repo_impl/admin_approval_repo_impl.dart';
 import 'package:rendezvous/src/admin-approval/domain/repo/admin_approval_repo.dart';
@@ -15,7 +16,6 @@ import 'package:rendezvous/src/onboarding/presentation/providers/email_verificat
 import 'package:rendezvous/src/onboarding/presentation/providers/profile_submission_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart'
     show SharedPreferences;
-import 'package:http/http.dart' as http;
 
 final sl = GetIt.instance;
 

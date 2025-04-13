@@ -15,14 +15,11 @@ class AdminApprovalProvider with ChangeNotifier {
 
   void startPolling() {
     _pollingTimer = Timer.periodic(const Duration(seconds: 20), (timer) async {
-      print('object');
-
       await checkApproval();
     });
   }
 
   Future<void> checkApproval() async {
-    print('provider check status');
     final result = await checkStatus();
     result.fold(
       (failure) => _error = failure.message,

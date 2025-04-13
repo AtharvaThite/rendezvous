@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -26,7 +25,7 @@ class CustomVideoPickerField extends StatefulWidget {
 class _CustomVideoPickerFieldState extends State<CustomVideoPickerField> {
   PlatformFile? selectedVideo;
   final TextEditingController fileNameController = TextEditingController();
-  double progress = 0.0;
+  double progress = 0;
   bool isUploading = false;
   final GlobalKey<FormFieldState<String>> _fieldKey =
       GlobalKey<FormFieldState<String>>();
@@ -47,9 +46,9 @@ class _CustomVideoPickerFieldState extends State<CustomVideoPickerField> {
         await controller.dispose();
 
         if (durationInSeconds > 20) {
-          CoreUtils.showSnackbar(
-            context,
-            'Please make sure the duration of video is not more than 20 seconds',
+          buildSnackbar(
+            'Please make sure the duration of video is not '
+            'more than 20 seconds',
           );
           return;
         }
@@ -67,9 +66,13 @@ class _CustomVideoPickerFieldState extends State<CustomVideoPickerField> {
 
         _fieldKey.currentState?.validate();
       } else {
-        CoreUtils.showSnackbar(context, 'Please select a valid video file.');
+        buildSnackbar('Please select a valid video file.');
       }
     }
+  }
+
+  void buildSnackbar(String message) {
+    CoreUtils.showSnackbar(context, message);
   }
 
   void _simulateUpload() {
@@ -162,7 +165,7 @@ class _CustomVideoPickerFieldState extends State<CustomVideoPickerField> {
             child: LinearProgressIndicator(
               value: progress,
               color: AppColors.borderColor,
-              backgroundColor: AppColors.borderColor.withOpacity(0.2),
+              backgroundColor: AppColors.borderColor.withValues(alpha: 0.2),
             ),
           ),
       ],

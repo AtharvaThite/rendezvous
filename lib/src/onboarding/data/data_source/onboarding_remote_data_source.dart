@@ -1,3 +1,6 @@
+//
+// ignore_for_file: avoid_dynamic_calls
+
 import 'dart:convert';
 import 'dart:developer';
 
@@ -5,7 +8,6 @@ import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
 import 'package:rendezvous/core/errors/exceptions.dart';
 import 'package:rendezvous/core/utils/api_urls.dart';
-import 'package:rendezvous/core/utils/core_utils.dart';
 import 'package:rendezvous/core/utils/shared_prefs_keys.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -92,7 +94,7 @@ class OnboardingRemoteDataSourceImpl extends OnboardingRemoteDataSource {
   @override
   Future<void> createUser({required FormData formData}) async {
     try {
-      final response = await _dio.post(
+      final response = await _dio.post<dynamic>(
         ApiUrls.createUser,
         data: formData,
         options: Options(contentType: 'multipart/form-data'),
@@ -130,44 +132,4 @@ class OnboardingRemoteDataSourceImpl extends OnboardingRemoteDataSource {
       );
     }
   }
-
-  // @override
-  // Future<void> createUser({required FormData formData}) async {
-  //   try {
-  //     log('2');
-  // final response = await _dio.post(
-  //   ApiUrls.createUser,
-  //   data: formData,
-  //   options: Options(contentType: 'multipart/form-data'),
-  // );
-  //     log('complete');
-  //     if (response.statusCode == 200) {
-  //       log('Upload successful!');
-  //       log(response.data.toString());
-  //       await _prefs.setBool(SharedPrefsKeys.isProfileCompleted, true);
-  //       await _prefs.setString(
-  //         SharedPrefsKeys.userId,
-  //         response.data['userID'].toString(),
-  //       );
-
-  //       return;
-  //     } else {
-  //       log('${response.statusCode} : ${response.data['errors']}');
-
-  //       throw APIException(
-  //         statusCode: response.statusCode ?? 800,
-  //         message:
-  //             response.data['errors']?.toString() ?? 'Unknown error occurred.',
-  //       );
-  //     }
-  //   } on APIException {
-  //     rethrow;
-  //   } catch (e, s) {
-  //     log('Unexpected exception: $e', stackTrace: s);
-  //     throw const APIException(
-  //       statusCode: 800,
-  //       message: 'Something went wrong.',
-  //     );
-  //   }
-  // }
 }

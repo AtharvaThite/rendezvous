@@ -83,6 +83,10 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
     });
   }
 
+  void buildSnackBar(String message) {
+    CoreUtils.showSnackbar(context, message);
+  }
+
   @override
   void dispose() {
     firstNameController.dispose();
@@ -203,7 +207,6 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                       CustomVideoPickerField(
                         labelText: 'Select Intro Video',
                         onVideoSelected: (video) {
-                          print('Selected video: ${video.name}');
                           selectedVideo = video;
                         },
                       ),
@@ -232,9 +235,9 @@ class _ProfileCreationPageState extends State<ProfileCreationPage> {
                       });
                       log('message');
                       await provider.createUser(formData);
-                      CoreUtils.showSnackbar(context, 'Profile Completed');
                       final userID =
                           prefs.getString(SharedPrefsKeys.userId) ?? '';
+                      buildSnackBar('Profile Completed');
                       if (userID.isNotEmpty) {
                         navigate();
                       }

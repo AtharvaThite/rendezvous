@@ -21,7 +21,6 @@ class AdminApprovalRemoteDataSourceImpl extends AdminApprovalRemoteDataSource {
   @override
   Future<String> checkApprovalStatus() async {
     try {
-      print('check status remote data source');
       final userId = _prefs.getString(SharedPrefsKeys.userId) ?? '';
       final response = await _client.patch(
         Uri.parse('${ApiUrls.adminApproval}/$userId'),
@@ -31,7 +30,6 @@ class AdminApprovalRemoteDataSourceImpl extends AdminApprovalRemoteDataSource {
 
       if (response.statusCode == 200) {
         await _prefs.setBool(SharedPrefsKeys.isProfileApproved, true);
-        print('check status $responseBody');
 
         return responseBody['message'] as String;
       } else {
