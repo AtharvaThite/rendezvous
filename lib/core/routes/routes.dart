@@ -7,6 +7,7 @@ import 'package:rendezvous/core/services/dependacy_injection.dart';
 import 'package:rendezvous/core/utils/shared_prefs_keys.dart';
 import 'package:rendezvous/src/admin-approval/presentation/providers/admin_approval_provider.dart';
 import 'package:rendezvous/src/admin-approval/presentation/views/admin_approval_screen.dart';
+import 'package:rendezvous/src/dashboard/presentation/views/dashboard.dart';
 import 'package:rendezvous/src/onboarding/presentation/providers/email_verification_provider.dart';
 import 'package:rendezvous/src/onboarding/presentation/providers/onboarding_state_manager.dart';
 import 'package:rendezvous/src/onboarding/presentation/providers/profile_submission_provider.dart';
@@ -25,8 +26,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
       final isProfileApproved =
           prefs.getBool(SharedPrefsKeys.isProfileApproved) ?? false;
 
-      // log('isEmailVerified = $isEmailVerified');
-      // log('isProfileCompleted = $isProfileCompleted');
+      log('isEmailVerified = $isEmailVerified');
+      log('isProfileCompleted = $isProfileCompleted');
+      log('isProfileApproved = $isProfileApproved');
       return _pageRouteBuilder((context) {
         if (!isEmailVerified) {
           log('000');
@@ -68,6 +70,8 @@ Route<dynamic> generateRoute(RouteSettings settings) {
             create: (context) => sl<AdminApprovalProvider>(),
             builder: (context, child) => const AdminApprovalScreen(),
           );
+        } else if (isProfileCompleted && isEmailVerified && isProfileApproved) {
+          return const Dashboard();
         } else {
           return const Placeholder();
         }
@@ -81,6 +85,9 @@ Route<dynamic> generateRoute(RouteSettings settings) {
         ),
         settings: settings,
       );
+
+    case RouteNames.dashboard:
+      return _pageRouteBuilder((_) => const Dashboard(), settings: settings);
     // Route to Page Not Found (Default) Page
     default:
       return _pageRouteBuilder((_) => const Placeholder(), settings: settings);
