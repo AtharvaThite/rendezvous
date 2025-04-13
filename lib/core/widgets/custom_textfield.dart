@@ -13,6 +13,7 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.keyboardType,
     this.inputFormatters,
+    this.initailValue,
     super.key,
   });
 
@@ -25,10 +26,12 @@ class CustomTextField extends StatelessWidget {
   final bool readOnly;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
+  final String? initailValue;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      initialValue: initailValue,
       controller: controller,
       obscureText: obscureText,
       readOnly: readOnly,
