@@ -6,6 +6,6 @@ class ApiUrls {
       '$baseUrl/api/users/request-email-code';
 
   static const String verifyEmailCode = '$baseUrl/api/users/verify-email-code';
-  static const String createUser = '$baseUrl/api/users/createUserNoReferral';
+  static const String createUser = '$baseUrl/api/users/createUserNoReferral/';
   static const String adminApproval = '$baseUrl/api/users/approveUser';
 }
