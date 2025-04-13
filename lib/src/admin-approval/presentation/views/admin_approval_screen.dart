@@ -3,6 +3,7 @@ import 'package:dotlottie_loader/dotlottie_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import 'package:rendezvous/core/routes/route_names.dart';
 import 'package:rendezvous/core/theme/app_colors.dart';
 import 'package:rendezvous/core/utils/core_utils.dart';
 import 'package:rendezvous/core/utils/extensions.dart';
@@ -35,17 +36,12 @@ class _AdminApprovalScreenState extends State<AdminApprovalScreen> {
       body: SafeArea(
         child: Consumer<AdminApprovalProvider>(
           builder: (context, provider, _) {
-            // If status is approved, navigate
-            if (provider.status == "User approved successfully.") {
+            if (provider.status == 'User approved successfully.') {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const Placeholder()),
-                );
+                Navigator.pushReplacementNamed(context, RouteNames.dashboard);
               });
             }
 
-            // If there's an error, show snackbar
             if (provider.error != null) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 CoreUtils.showErrorSnackbar(context, provider.error!);
