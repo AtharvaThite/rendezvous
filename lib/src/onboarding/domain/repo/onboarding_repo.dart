@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:rendezvous/core/utils/typedefs.dart';
 
 abstract class OnboardingRepo {
@@ -8,4 +9,5 @@ abstract class OnboardingRepo {
     required String email,
     required String code,
   });
+  ResultFuture<void> createUser({required FormData params});
 }
