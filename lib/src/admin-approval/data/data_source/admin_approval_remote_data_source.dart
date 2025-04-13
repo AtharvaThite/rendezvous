@@ -30,6 +30,7 @@ class AdminApprovalRemoteDataSourceImpl extends AdminApprovalRemoteDataSource {
       final responseBody = jsonDecode(response.body) as Map<String, dynamic>;
 
       if (response.statusCode == 200) {
+        await _prefs.setBool(SharedPrefsKeys.isProfileApproved, true);
         print('check status $responseBody');
 
         return responseBody['message'] as String;
